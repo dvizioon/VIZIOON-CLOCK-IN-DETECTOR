@@ -1,0 +1,101 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    xmlns:tools="http://schemas.android.com/tools"
+4    package="expo.modules.clockinmonitor" >
+5
+6    <uses-sdk android:minSdkVersion="24" />
+7
+8    <uses-permission
+8-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:4:3-6:45
+9        android:name="android.permission.PACKAGE_USAGE_STATS"
+9-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:5:7-60
+10        tools:ignore="ProtectedPermissions" />
+10-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:6:7-42
+11    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+11-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:7:3-75
+11-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:7:20-72
+12    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+12-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:8:3-87
+12-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:8:20-84
+13    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+13-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:9:3-75
+13-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:9:20-72
+14    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+14-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:10:3-77
+14-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:10:20-74
+15    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+15-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:11:3-72
+15-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:11:20-69
+16    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+16-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:12:3-79
+16-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:12:20-76
+17    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+17-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:13:3-76
+17-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:13:20-73
+18    <uses-permission android:name="android.permission.WAKE_LOCK" />
+18-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:14:5-68
+18-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:14:22-65
+19    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+19-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:3-79
+19-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:20-76
+20
+21    <application>
+21-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:17:3-45:17
+22        <service
+22-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:18:5-25:15
+23            android:name="expo.modules.clockinmonitor.ClockInMonitorService"
+23-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:19:9-46
+24            android:exported="false"
+24-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:20:9-33
+25            android:foregroundServiceType="specialUse" >
+25-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:21:9-51
+26            <property
+26-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:22:7-24:111
+27                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+27-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:23:11-70
+28                android:value="Monitors when TOTVS RH Clock In is in the foreground and when a camera is in use." />
+28-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:24:11-108
+29        </service>
+30
+31        <activity
+31-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:26:5-33:39
+32            android:name="expo.modules.clockinmonitor.PunchAlertActivity"
+32-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:27:9-43
+33            android:excludeFromRecents="true"
+33-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:28:9-42
+34            android:exported="false"
+34-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:29:9-33
+35            android:launchMode="singleTop"
+35-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:30:9-39
+36            android:showWhenLocked="true"
+36-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:31:9-38
+37            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+37-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:32:9-73
+38            android:turnScreenOn="true" />
+38-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:33:9-36
+39
+40        <receiver
+40-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:34:5-36:36
+41            android:name="expo.modules.clockinmonitor.ScreenAlertReceiver"
+41-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:35:9-44
+42            android:exported="false" />
+42-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:36:9-33
+43        <receiver
+43-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:37:5-44:16
+44            android:name="expo.modules.clockinmonitor.BootReceiver"
+44-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:38:9-37
+45            android:exported="true" >
+45-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:39:9-32
+46            <intent-filter>
+46-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:40:7-43:23
+47                <action android:name="android.intent.action.BOOT_COMPLETED" />
+47-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:9-71
+47-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:17-68
+48                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+48-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:9-78
+48-->/home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:17-75
+49            </intent-filter>
+50        </receiver>
+51    </application>
+52
+53</manifest>

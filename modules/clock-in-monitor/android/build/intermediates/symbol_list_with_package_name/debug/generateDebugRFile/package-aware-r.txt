@@ -1,0 +1,2 @@
+expo.modules.clockinmonitor
+drawable alert_logo

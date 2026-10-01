@@ -1,0 +1,114 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-46:12
+INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-46:12
+	package
+		INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:2:5-51
+	xmlns:android
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:11-69
+uses-permission#android.permission.PACKAGE_USAGE_STATS
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:4:3-6:45
+	tools:ignore
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:6:7-42
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:5:7-60
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:7:3-75
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:7:20-72
+uses-permission#android.permission.FOREGROUND_SERVICE_SPECIAL_USE
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:8:3-87
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:8:20-84
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:9:3-75
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:9:20-72
+uses-permission#android.permission.SCHEDULE_EXACT_ALARM
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:10:3-77
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:10:20-74
+uses-permission#android.permission.USE_EXACT_ALARM
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:11:3-72
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:11:20-69
+uses-permission#android.permission.USE_FULL_SCREEN_INTENT
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:12:3-79
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:12:20-76
+uses-permission#android.permission.SYSTEM_ALERT_WINDOW
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:13:3-76
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:13:20-73
+uses-permission#android.permission.WAKE_LOCK
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:14:5-68
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:14:22-65
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:3-79
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:20-76
+application
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:17:3-45:17
+service#expo.modules.clockinmonitor.ClockInMonitorService
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:18:5-25:15
+	android:exported
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:20:9-33
+	android:foregroundServiceType
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:21:9-51
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:19:9-46
+property#android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:22:7-24:111
+	android:value
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:24:11-108
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:23:11-70
+activity#expo.modules.clockinmonitor.PunchAlertActivity
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:26:5-33:39
+	android:turnScreenOn
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:33:9-36
+	android:excludeFromRecents
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:28:9-42
+	android:showWhenLocked
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:31:9-38
+	android:launchMode
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:30:9-39
+	android:exported
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:29:9-33
+	android:theme
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:32:9-73
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:27:9-43
+receiver#expo.modules.clockinmonitor.ScreenAlertReceiver
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:34:5-36:36
+	android:exported
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:36:9-33
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:35:9-44
+receiver#expo.modules.clockinmonitor.BootReceiver
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:37:5-44:16
+	android:exported
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:39:9-32
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:38:9-37
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.LOCKED_BOOT_COMPLETED
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:40:7-43:23
+action#android.intent.action.BOOT_COMPLETED
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:9-71
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:17-68
+action#android.intent.action.LOCKED_BOOT_COMPLETED
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:9-78
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:17-75
+uses-sdk
+INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
+INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml

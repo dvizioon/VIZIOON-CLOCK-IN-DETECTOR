@@ -1,0 +1,12 @@
+{
+  "name": "clock-in-monitor",
+  "version": "0.1.0",
+  "description": "Detects when TOTVS RH Clock In is in the foreground and when the camera is in use.",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

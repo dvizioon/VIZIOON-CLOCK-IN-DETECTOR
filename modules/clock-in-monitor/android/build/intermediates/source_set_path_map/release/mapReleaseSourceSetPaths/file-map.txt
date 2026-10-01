@@ -1,0 +1,7 @@
+expo.modules.clockinmonitor.clock-in-monitor-pngs-0 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/build/generated/res/pngs/release
+expo.modules.clockinmonitor.clock-in-monitor-resValues-1 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/build/generated/res/resValues/release
+expo.modules.clockinmonitor.clock-in-monitor-mergeReleaseResources-2 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+expo.modules.clockinmonitor.clock-in-monitor-mergeReleaseResources-3 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+expo.modules.clockinmonitor.clock-in-monitor-release-4 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/build/intermediates/merged_res/release/mergeReleaseResources
+expo.modules.clockinmonitor.clock-in-monitor-main-5 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/res
+expo.modules.clockinmonitor.clock-in-monitor-release-6 /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/release/res
