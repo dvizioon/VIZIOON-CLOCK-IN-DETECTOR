@@ -44,6 +44,12 @@ yarn-error.*
 website/.docusaurus/
 website/build/
 
+# tests
+coverage/
+
 # cursor
 .cursor/
 .cursorignore
+
+# project
+/VIZIOON-CLOCKIN-DETECTOR

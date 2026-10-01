@@ -121,6 +121,16 @@ export async function ensureOverlayPermission(): Promise<boolean> {
   return false;
 }
 
+export function vibrateAlert(times: number): Promise<boolean> {
+  if (!ClockInMonitor?.vibrateAlert) return Promise.resolve(false);
+  return ClockInMonitor.vibrateAlert(times).catch(() => false);
+}
+
+export function cancelVibration(): Promise<boolean> {
+  if (!ClockInMonitor?.cancelVibration) return Promise.resolve(false);
+  return ClockInMonitor.cancelVibration().catch(() => false);
+}
+
 export function rememberAlertPlayback(
   soundUri: string,
   alarmUri: string,

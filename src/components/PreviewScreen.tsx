@@ -46,12 +46,19 @@ export function PreviewScreen({ settings, onPreviewSeconds }: Props) {
   }, [startedAt]);
 
   function start() {
-    void ensureOverlayPermission().then((allowed) => {
-      if (!allowed) return;
+    const run = () => {
       const began = Date.now();
       setStartedAt(began);
       setNow(began);
       void startBackgroundPreview(settings);
+    };
+    if (!settings.screenAlert) {
+      run();
+      return;
+    }
+    void ensureOverlayPermission().then((allowed) => {
+      if (!allowed) return;
+      run();
     });
   }
 
@@ -74,7 +81,9 @@ export function PreviewScreen({ settings, onPreviewSeconds }: Props) {
       <Text style={styles.title}>Prévia</Text>
       <Text style={styles.body}>
         {startedAt == null
-          ? 'Bater ponto manda o aplicativo para o fundo. O aviso da volta e da saída aparece por cima do que estiver aberto.'
+          ? settings.screenAlert
+            ? 'Bater ponto manda o aplicativo para o fundo. O aviso da volta e da saída aparece por cima do que estiver aberto.'
+            : 'Bater ponto manda o aplicativo para o fundo. A volta e a saída avisam por notificação. A janela no meio da tela está desligada.'
           : `Passaram ${elapsed}s. A volta avisa em ${gap}s e a saída em ${gap * 2}s.`}
       </Text>
 

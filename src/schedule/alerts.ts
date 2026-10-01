@@ -1,6 +1,6 @@
-import { cancelScreenAlert, ensureAlertChannel, moveToBackground, openNotificationSettings as openNativeNotificationSettings, playSystemSound, presentScreenAlert, rememberAlertPlayback, scheduleScreenAlert } from 'clock-in-monitor';
+import { cancelScreenAlert, cancelVibration, ensureAlertChannel, moveToBackground, openNotificationSettings as openNativeNotificationSettings, playSystemSound, presentScreenAlert, rememberAlertPlayback, scheduleScreenAlert, vibrateAlert } from 'clock-in-monitor';
 import { requireOptionalNativeModule } from 'expo';
-import { Linking, Platform, Vibration } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { exclusive, readDay, writeDay } from './storage';
 import { notificationCopy, reminderTimes } from './time';
 import { punchTitle, type Punch, type PunchKind, type ScheduleSettings, type WorkDay } from './types';
@@ -308,11 +308,13 @@ export async function startBackgroundPreview(settings: ScheduleSettings): Promis
     settings.vibration,
     settings.vibrationCount,
   );
-  await Promise.all(
-    PREVIEW_KINDS.map((kind, index) =>
-      scheduleScreenAlert(now + gap * (index + 1), PREVIEW_SCREEN_BASE + index, punchTitle[kind], message),
-    ),
-  );
+  if (settings.screenAlert) {
+    await Promise.all(
+      PREVIEW_KINDS.map((kind, index) =>
+        scheduleScreenAlert(now + gap * (index + 1), PREVIEW_SCREEN_BASE + index, punchTitle[kind], message),
+      ),
+    );
+  }
   const Notifications = await loadNotifications();
   if (Notifications && !(await ensureAlertPermission())) {
     const channel = await ensureChannel(Notifications, settings);
@@ -371,14 +373,14 @@ export async function startBackgroundPreview(settings: ScheduleSettings): Promis
 
 export function stopPreview(): void {
   clearPreviewTimers();
-  Vibration.cancel();
+  void cancelVibration();
   void haltPlayback();
   void cancelBackgroundPreview();
 }
 
 async function beginPreview(): Promise<void> {
   clearPreviewTimers();
-  Vibration.cancel();
+  await cancelVibration();
   await haltPlayback();
 }
 
@@ -448,12 +450,12 @@ export async function previewAlarm(settings: ScheduleSettings): Promise<string |
 export function previewVibration(settings: ScheduleSettings): void {
   stopPreview();
   if (!settings.vibration) return;
-  Vibration.vibrate(vibrationPattern(settings.vibrationCount));
+  void vibrateAlert(settings.vibrationCount);
 }
 
 export async function playConfiguredAlert(settings: ScheduleSettings): Promise<void> {
   await beginPreview();
-  if (settings.vibration) Vibration.vibrate(vibrationPattern(settings.vibrationCount));
+  if (settings.vibration) void vibrateAlert(settings.vibrationCount);
   const notice = settings.sound && settings.alert;
   if (notice) await playSelectedSound(settings);
   if (!settings.alarm) return;

@@ -135,6 +135,18 @@ class ClockInMonitorModule : Module() {
       true
     }
 
+    AsyncFunction("vibrateAlert") { times: Int? ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      vibrate(context, times ?: 4)
+      true
+    }
+
+    AsyncFunction("cancelVibration") {
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      cancelVibration(context)
+      true
+    }
+
     AsyncFunction("rememberAlertPlayback") {
       soundUri: String?,
       alarmUri: String?,

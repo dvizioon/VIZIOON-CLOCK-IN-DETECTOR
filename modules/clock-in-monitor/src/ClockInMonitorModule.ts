@@ -67,6 +67,8 @@ declare class ClockInMonitorNativeModule extends NativeModule<ClockInMonitorEven
   ensureFullScreenIntent(): Promise<boolean>;
   canDrawOverlay(): Promise<boolean>;
   openOverlaySettings(): Promise<boolean>;
+  vibrateAlert(times: number): Promise<boolean>;
+  cancelVibration(): Promise<boolean>;
   rememberAlertPlayback(
     soundUri: string,
     alarmUri: string,

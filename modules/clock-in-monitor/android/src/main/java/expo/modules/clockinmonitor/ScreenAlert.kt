@@ -15,10 +15,12 @@ import android.graphics.PixelFormat
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
+import android.media.AudioAttributes
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.os.VibrationAttributes
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -347,20 +349,40 @@ private fun logoView(context: Context, size: Int): ImageView {
   }
 }
 
-private fun vibrate(context: Context, times: Int) {
-  val count = times.coerceIn(1, 10)
-  val pattern = LongArray(count * 2) { index -> if (index % 2 == 0) { if (index == 0) 0L else 200L } else 400L }
-  val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+fun deviceVibrator(context: Context): Vibrator {
+  return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
     context.getSystemService(VibratorManager::class.java).defaultVibrator
   } else {
     @Suppress("DEPRECATION")
     context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
   }
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-    vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1))
-  } else {
-    @Suppress("DEPRECATION")
-    vibrator.vibrate(pattern, -1)
+}
+
+fun cancelVibration(context: Context) {
+  runCatching { deviceVibrator(context).cancel() }
+}
+
+fun vibrate(context: Context, times: Int) {
+  val count = times.coerceIn(1, 10)
+  val pattern = LongArray(count * 2) { index -> if (index % 2 == 0) { if (index == 0) 0L else 200L } else 400L }
+  val vibrator = deviceVibrator(context)
+  if (!vibrator.hasVibrator()) return
+  runCatching {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      val attrs = VibrationAttributes.Builder()
+        .setUsage(VibrationAttributes.USAGE_ALARM)
+        .build()
+      vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1), attrs)
+    } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val audio = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_ALARM)
+        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+        .build()
+      vibrator.vibrate(VibrationEffect.createWaveform(pattern, -1), audio)
+    } else {
+      @Suppress("DEPRECATION")
+      vibrator.vibrate(pattern, -1)
+    }
   }
 }
 
