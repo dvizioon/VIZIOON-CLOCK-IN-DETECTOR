@@ -45,8 +45,5 @@ website/.docusaurus/
 website/build/
 
 # cursor
+.cursor/
 .cursorignore
-.cursor
-
-# project
-/VIZIOON-CLOCKIN-DETECTOR
