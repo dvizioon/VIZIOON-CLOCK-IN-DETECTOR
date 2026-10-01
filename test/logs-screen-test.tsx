@@ -1,6 +1,5 @@
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as Clipboard from 'expo-clipboard';
-import type { ReactTestInstance } from 'react-test-renderer';
 import { LogsScreen } from '../src/components/LogsScreen';
 import type { LogLine } from '../src/logs/logbook';
 
@@ -25,8 +24,12 @@ const lines: LogLine[] = [
   },
 ];
 
-function press(node: ReactTestInstance) {
-  fireEvent.press(node.parent ?? node);
+function press(node: { parent: Parameters<typeof fireEvent.press>[0] | null } & Parameters<typeof fireEvent.press>[0]) {
+  if (node.parent) {
+    fireEvent.press(node.parent);
+    return;
+  }
+  fireEvent.press(node);
 }
 
 describe('Logs', () => {
