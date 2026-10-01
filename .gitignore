@@ -43,3 +43,7 @@ yarn-error.*
 # docs site
 website/.docusaurus/
 website/build/
+
+# cursor
+.cursorignore
+.cursor
