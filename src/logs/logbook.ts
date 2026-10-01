@@ -1,12 +1,17 @@
 import { File, Paths } from 'expo-file-system';
-import { StorageAccessFramework } from 'expo-file-system/legacy';
 import type { MonitorEvent } from 'clock-in-monitor';
+
+export type LogKind = 'camera' | 'foreground' | 'event';
 
 export type LogLine = {
   id: string;
   timestamp: number;
   text: string;
+  kind?: LogKind;
+  clockIn?: boolean;
 };
+
+export type LogFilter = 'all' | 'event' | 'clockin';
 
 const MAX_LINES = 2000;
 const file = new File(Paths.document, 'clock-logs.json');
@@ -38,6 +43,8 @@ export function eventToLine(event: MonitorEvent): LogLine {
     return {
       id: eventId(event),
       timestamp: event.timestamp,
+      kind: 'camera',
+      clockIn: event.clockInInForeground,
       text: `${formatStamp(event.timestamp)}  Câmera ${event.cameraId}: ${usage}.${point}`,
     };
   }
@@ -46,12 +53,16 @@ export function eventToLine(event: MonitorEvent): LogLine {
     return {
       id: eventId(event),
       timestamp: event.timestamp,
+      kind: 'foreground',
+      clockIn: event.isClockIn,
       text: `${formatStamp(event.timestamp)}  Primeiro plano: ${event.packageName}${point}`,
     };
   }
   return {
     id: eventId(event),
     timestamp: event.timestamp,
+    kind: 'event',
+    clockIn: true,
     text: `${formatStamp(event.timestamp)}  Reconhecimento facial. Câmera ${event.cameraId}.`,
   };
 }
@@ -107,22 +118,24 @@ export function logText(lines: LogLine[]): string {
   return lines.map((line) => line.text).join('\n');
 }
 
-export async function downloadLogs(lines: LogLine[]): Promise<string | null> {
-  if (lines.length === 0) return 'Nenhum log para salvar.';
-  const permission = await StorageAccessFramework.requestDirectoryPermissionsAsync();
-  if (!permission.granted) return null;
-  const stamp = new Date();
-  const part = (value: number) => String(value).padStart(2, '0');
-  const name = `ponto-logs-${stamp.getFullYear()}${part(stamp.getMonth() + 1)}${part(stamp.getDate())}-${part(stamp.getHours())}${part(stamp.getMinutes())}`;
-  try {
-    const uri = await StorageAccessFramework.createFileAsync(
-      permission.directoryUri,
-      name,
-      'text/plain',
-    );
-    await StorageAccessFramework.writeAsStringAsync(uri, logText(lines));
-    return 'Log salvo.';
-  } catch {
-    return 'Não foi possível salvar o log.';
-  }
+function lineKind(line: LogLine): LogKind {
+  if (line.kind) return line.kind;
+  if (line.text.includes('Reconhecimento facial')) return 'event';
+  if (line.text.includes('Câmera')) return 'camera';
+  return 'foreground';
+}
+
+function lineIsClockIn(line: LogLine): boolean {
+  if (typeof line.clockIn === 'boolean') return line.clockIn;
+  return (
+    line.text.includes('(ponto)') ||
+    line.text.includes('Ponto visível') ||
+    line.text.includes('Reconhecimento facial')
+  );
+}
+
+export function filterLines(lines: LogLine[], filter: LogFilter): LogLine[] {
+  if (filter === 'event') return lines.filter((line) => lineKind(line) === 'event');
+  if (filter === 'clockin') return lines.filter((line) => lineIsClockIn(line));
+  return lines;
 }

@@ -3,7 +3,7 @@ import type { Config } from '@docusaurus/types'
 import type * as Preset from '@docusaurus/preset-classic'
 
 const org = 'dvizioon'
-const project = 'clock-in-detector'
+const project = 'VIZIOON-CLOCK-IN-DETECTOR'
 
 const config: Config = {
   title: 'Detector de ponto',

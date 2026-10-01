@@ -6,6 +6,7 @@
     "@expo/vector-icons": "^15.0.2",
     "clock-in-monitor": "file:./modules/clock-in-monitor",
     "expo": "~57.0.26",
+    "expo-clipboard": "~57.0.2",
     "expo-file-system": "~57.0.7",
     "expo-notifications": "~57.0.21",
     "expo-status-bar": "~57.0.1",

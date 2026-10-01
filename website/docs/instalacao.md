@@ -9,7 +9,7 @@ sidebar_custom_props:
 
 O arquivo para instalar no celular é o APK de **release**. Ele funciona sem o computador ligado. O APK de debug só serve enquanto o Metro está aberto no computador.
 
-O arquivo fica em `android/app/build/outputs/apk/release/app-release.apk` depois deste comando, na pasta do projeto:
+O arquivo fica em `android/app/build/outputs/apk/release/clock-in-detector.apk` depois deste comando, na pasta do projeto:
 
 ```bash
 cd android && ./gradlew assembleRelease

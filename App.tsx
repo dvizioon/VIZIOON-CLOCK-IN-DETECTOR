@@ -32,7 +32,7 @@ import { LogsScreen } from './src/components/LogsScreen';
 import { PreviewScreen } from './src/components/PreviewScreen';
 import { PunchesScreen } from './src/components/PunchesScreen';
 import { SettingsScreen } from './src/components/SettingsScreen';
-import { downloadLogs, rememberEvents, type LogLine } from './src/logs/logbook';
+import { rememberEvents, type LogLine } from './src/logs/logbook';
 import { listenForStopAction, openNotificationSettings, readNotificationPermission, requestNotificationPermission } from './src/schedule/alerts';
 import { countsByDay, countsByKind, monthKey, monthTitle, punchedCount, startOfWeek, weekKeys } from './src/schedule/history';
 import { loadSettings, registerFacialRecognition, savePunchNote, saveSettings, syncTodayFromEvents } from './src/schedule/day';
@@ -82,8 +82,6 @@ function App() {
   const [settings, setSettings] = useState<ScheduleSettings>(defaultSettings);
   const [alertWarning, setAlertWarning] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogLine[]>([]);
-  const [logMessage, setLogMessage] = useState<string | null>(null);
-  const [savingLogs, setSavingLogs] = useState(false);
   const [notificationsGranted, setNotificationsGranted] = useState<boolean | null>(null);
   const [days, setDays] = useState<WorkDay[]>([]);
   const [chart, setChart] = useState(() => chartFrom([]));
@@ -226,18 +224,7 @@ function App() {
         ) : null}
 
         {screen === 'logs' ? (
-          <LogsScreen
-            lines={logs}
-            message={logMessage}
-            saving={savingLogs}
-            onDownload={() => {
-              setSavingLogs(true);
-              setLogMessage(null);
-              void downloadLogs(logs)
-                .then(setLogMessage)
-                .finally(() => setSavingLogs(false));
-            }}
-          />
+          <LogsScreen lines={logs} />
         ) : null}
 
         {screen === 'about' ? (

@@ -1,30 +1,69 @@
+import * as Clipboard from 'expo-clipboard';
+import { useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
-import type { LogLine } from '../logs/logbook';
+import { filterLines, logText, type LogFilter, type LogLine } from '../logs/logbook';
+
+const FILTERS: { id: LogFilter; label: string }[] = [
+  { id: 'all', label: 'Tudo' },
+  { id: 'event', label: 'Evento' },
+  { id: 'clockin', label: 'Clock In' },
+];
 
 type Props = {
   lines: LogLine[];
-  message: string | null;
-  saving: boolean;
-  onDownload: () => void;
 };
 
-export function LogsScreen({ lines, message, saving, onDownload }: Props) {
+export function LogsScreen({ lines }: Props) {
+  const [filter, setFilter] = useState<LogFilter>('all');
+  const [notice, setNotice] = useState<string | null>(null);
+  const visible = filterLines(lines, filter);
+
+  async function onCopy() {
+    if (visible.length === 0) {
+      setNotice('Nada para copiar.');
+      return;
+    }
+    await Clipboard.setStringAsync(logText(visible));
+    setNotice('Copiado.');
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <Text style={styles.title}>Logs</Text>
-          <Pressable onPress={onDownload} disabled={saving} hitSlop={8}>
-            <Text style={styles.download}>{saving ? 'Salvando…' : 'Baixar'}</Text>
+          <Pressable onPress={() => void onCopy()} hitSlop={8}>
+            <Text style={styles.copy}>Copiar</Text>
           </Pressable>
         </View>
-        {message ? <Text style={styles.message}>{message}</Text> : null}
+        <View style={styles.filters}>
+          {FILTERS.map((item) => {
+            const selected = filter === item.id;
+            return (
+              <Pressable
+                key={item.id}
+                onPress={() => {
+                  setFilter(item.id);
+                  setNotice(null);
+                }}
+                style={selected ? styles.chipOn : styles.chip}
+              >
+                <Text style={selected ? styles.chipLabelOn : styles.chipLabel}>{item.label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        {notice ? <Text style={styles.message}>{notice}</Text> : null}
       </View>
       <FlatList
-        data={lines}
+        data={visible}
         keyExtractor={(line) => line.id}
         contentContainerStyle={styles.list}
-        ListEmptyComponent={<Text style={styles.empty}>Nenhum log ainda.</Text>}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            {lines.length === 0 ? 'Nenhum log ainda.' : 'Nenhum log nesse filtro.'}
+          </Text>
+        }
         renderItem={({ item }) => <Text style={styles.line}>{item.text}</Text>}
       />
     </View>
@@ -40,11 +79,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 12,
   },
-  back: {
-    color: '#2A1B4E',
-    fontSize: 16,
-    fontWeight: '600',
-  },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -55,9 +89,35 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#102033',
   },
-  download: {
+  copy: {
     color: '#2A1B4E',
     fontSize: 16,
+    fontWeight: '600',
+  },
+  filters: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  chip: {
+    backgroundColor: '#e7eef8',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipOn: {
+    backgroundColor: '#2A1B4E',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  chipLabel: {
+    color: '#2A1B4E',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  chipLabelOn: {
+    color: '#fff',
+    fontSize: 14,
     fontWeight: '600',
   },
   message: {

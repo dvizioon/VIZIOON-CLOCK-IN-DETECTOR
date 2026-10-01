@@ -8,7 +8,7 @@ npm install
 npm start
 ```
 
-Abre em `http://localhost:3000/clock-in-detector/`.
+Abre em `http://localhost:3000/VIZIOON-CLOCK-IN-DETECTOR/`.
 
 Na raiz do projeto, `npm run docs` faz o mesmo.
 

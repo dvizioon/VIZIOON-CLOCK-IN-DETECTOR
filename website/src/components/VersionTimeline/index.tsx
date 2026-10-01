@@ -2,7 +2,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl'
 import { useEffect, useState } from 'react'
 
 const GITHUB_RELEASES =
-  'https://api.github.com/repos/dvizioon/clock-in-detector/releases?per_page=30'
+  'https://api.github.com/repos/dvizioon/VIZIOON-CLOCK-IN-DETECTOR/releases?per_page=30'
 
 type Release = {
   tag: string

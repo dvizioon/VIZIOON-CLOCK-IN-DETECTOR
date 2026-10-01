@@ -15,6 +15,8 @@ O menu de baixo tem Início, Batidas, Prévia, Logs, Ajustes e Sobre.
 
 **Prévia** manda o aplicativo para o fundo e dispara a volta e a saída no intervalo escolhido ali, para você ver o alerta com outro aplicativo aberto ou com o celular bloqueado. Ao voltar, o visor mostra quantos segundos passaram.
 
+**Logs** lista câmera, aplicativo da frente e o reconhecimento. **Evento** deixa só a batida. **Clock In** esconde o resto. **Copiar** copia o que está na tela.
+
 **Ajustes** tem pesquisa. As seções são Permissões, Jornada, Som e Aviso. Salvar mostra “Configurações salvas”.
 
 **Sobre** mostra a logo, a versão e o crédito de Daniel Estevão, Vizioon.

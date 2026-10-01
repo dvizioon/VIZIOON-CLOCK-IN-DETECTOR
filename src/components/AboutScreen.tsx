@@ -4,9 +4,9 @@ import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native'
 
 const logo = require('../../assets/icon.png');
 
-const REPO_URL = 'https://github.com/dvizioon/clock-in-detector';
-const RELEASES_URL =
-  'https://api.github.com/repos/dvizioon/clock-in-detector/releases?per_page=20';
+const REPO = 'dvizioon/VIZIOON-CLOCK-IN-DETECTOR';
+const REPO_URL = `https://github.com/${REPO}`;
+const RELEASES_URL = `https://api.github.com/repos/${REPO}/releases?per_page=20`;
 
 type Release = {
   tag: string;
@@ -14,18 +14,11 @@ type Release = {
   apk: string | null;
 };
 
-const FALLBACK: Release[] = [
-  {
-    tag: 'v1.0.0',
-    changes: [
-      'Detecta o Clock In pela tela e pela câmera ocupada.',
-      'Avisa a volta do almoço e a saída do expediente.',
-      'Ponto adicional não cancela os avisos.',
-      'Observação em cada batida.',
-    ],
-    apk: null,
-  },
-];
+type ReleasesState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'empty' }
+  | { status: 'ready'; releases: Release[] };
 
 function parseBody(body: string): string[] {
   return body
@@ -43,21 +36,24 @@ function pickApk(assets: unknown): string | null {
   return apk?.browser_download_url ?? null;
 }
 
-async function loadReleases(): Promise<Release[]> {
+async function loadReleases(): Promise<ReleasesState> {
   try {
     const response = await fetch(RELEASES_URL, {
       headers: { Accept: 'application/vnd.github+json' },
     });
-    if (!response.ok) return FALLBACK;
+    if (!response.ok) return { status: 'error' };
     const data = (await response.json()) as Record<string, unknown>[];
-    if (!Array.isArray(data) || data.length === 0) return FALLBACK;
-    return data.map((item) => ({
-      tag: String(item.tag_name ?? ''),
-      changes: parseBody(String(item.body ?? '')),
-      apk: pickApk(item.assets),
-    }));
+    if (!Array.isArray(data) || data.length === 0) return { status: 'empty' };
+    return {
+      status: 'ready',
+      releases: data.map((item) => ({
+        tag: String(item.tag_name ?? ''),
+        changes: parseBody(String(item.body ?? '')),
+        apk: pickApk(item.assets),
+      })),
+    };
   } catch {
-    return FALLBACK;
+    return { status: 'error' };
   }
 }
 
@@ -66,7 +62,7 @@ function openLink(url: string) {
 }
 
 export function AboutScreen() {
-  const [releases, setReleases] = useState<Release[]>(FALLBACK);
+  const [releases, setReleases] = useState<ReleasesState>({ status: 'loading' });
 
   useEffect(() => {
     let cancelled = false;
@@ -94,29 +90,40 @@ export function AboutScreen() {
         <Ionicons name="logo-github" size={22} color="#2A1B4E" />
         <View style={styles.cardText}>
           <Text style={styles.cardLabel}>GitHub</Text>
-          <Text style={styles.cardValue}>dvizioon/clock-in-detector</Text>
+          <Text style={styles.cardValue}>{REPO}</Text>
         </View>
       </Pressable>
 
       <View style={styles.cardBlock}>
         <Text style={styles.section}>Versões</Text>
-        {releases.map((release) => (
-          <View key={release.tag} style={styles.release}>
-            <Text style={styles.releaseTag}>{release.tag}</Text>
-            {release.changes.map((line) => (
-              <Text key={line} style={styles.releaseLine}>
-                {line}
-              </Text>
-            ))}
-            {release.apk ? (
-              <Pressable style={styles.download} onPress={() => openLink(release.apk!)}>
-                <Text style={styles.downloadLabel}>Baixar APK</Text>
-              </Pressable>
-            ) : (
-              <Text style={styles.pending}>O APK aparece quando a release estiver no GitHub.</Text>
-            )}
-          </View>
-        ))}
+        {releases.status === 'loading' ? <Text style={styles.pending}>Carregando releases…</Text> : null}
+        {releases.status === 'error' ? (
+          <Text style={styles.pending}>
+            Não foi possível carregar as releases. Sem internet, ou o GitHub não respondeu.
+          </Text>
+        ) : null}
+        {releases.status === 'empty' ? (
+          <Text style={styles.pending}>Nenhuma release publicada ainda.</Text>
+        ) : null}
+        {releases.status === 'ready'
+          ? releases.releases.map((release) => (
+              <View key={release.tag} style={styles.release}>
+                <Text style={styles.releaseTag}>{release.tag}</Text>
+                {release.changes.map((line) => (
+                  <Text key={line} style={styles.releaseLine}>
+                    {line}
+                  </Text>
+                ))}
+                {release.apk ? (
+                  <Pressable style={styles.download} onPress={() => openLink(release.apk as string)}>
+                    <Text style={styles.downloadLabel}>Baixar APK</Text>
+                  </Pressable>
+                ) : (
+                  <Text style={styles.pending}>Essa release ainda não tem APK.</Text>
+                )}
+              </View>
+            ))
+          : null}
       </View>
 
       <View style={styles.credit}>
