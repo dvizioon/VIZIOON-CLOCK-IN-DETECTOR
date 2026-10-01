@@ -47,3 +47,6 @@ website/build/
 # cursor
 .cursorignore
 .cursor
+
+# project
+/Vizioon-Clockin-Detector
