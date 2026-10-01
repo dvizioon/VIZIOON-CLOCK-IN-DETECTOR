@@ -19,7 +19,7 @@
   <br />
   <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Kotlin-Android-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" />
-  <img src="https://img.shields.io/badge/VERSION-1.0.0-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/VERSION-1.0.1-success?style=for-the-badge" />
   <img src="https://img.shields.io/badge/IDIOMA-pt--BR-2A1B4E?style=for-the-badge" />
 </p>
 
@@ -86,7 +86,7 @@ Exemplo: entrada às 8:00, jornada de 8 horas, almoço de 1 hora, saída para o 
 - **Batidas.** Lista do dia e observação em cada ponto. O texto grava ao sair do campo.
 - **Prévia.** Item do menu. Dispara a volta e a saída no intervalo escolhido ali, inclusive com o app em segundo plano.
 - **Logs.** Câmera, aplicativo da frente e o reconhecimento. **Evento** deixa só a batida. **Clock In** deixa só o que é do Clock In. **Copiar** copia a lista filtrada.
-- **Sobre.** Logo, versão, crédito e o GitHub. As releases vêm da API. Sem internet, a tela avisa que não foi possível carregar. **Baixar APK** abre o arquivo anexado na release.
+- **Sobre.** Logo, versão, crédito e o GitHub. As releases aparecem numa linha do tempo, sem o texto. A versão instalada fica marcada. **Atualizar** só aparece numa versão mais nova e baixa o APK dela. O card abre a página da release. Sem internet, a tela avisa que não foi possível carregar.
 
 ## Stack
 

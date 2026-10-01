@@ -12,4 +12,4 @@ Abre em `http://localhost:3000/VIZIOON-CLOCK-IN-DETECTOR/`.
 
 Na raiz do projeto, `npm run docs` faz o mesmo.
 
-O histórico de cada release está em `static/releases.json` e na página **Versões**.
+A página **Versões** lê as releases do GitHub.

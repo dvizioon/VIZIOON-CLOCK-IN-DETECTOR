@@ -1,4 +1,3 @@
-import useBaseUrl from '@docusaurus/useBaseUrl'
 import { useEffect, useState } from 'react'
 
 const GITHUB_RELEASES =
@@ -12,12 +11,11 @@ type Release = {
   installUrl: string | null
 }
 
-type LocalRelease = {
-  tag: string
-  date: string
-  changes: string[]
-  installUrl?: string | null
-}
+type ReleasesState =
+  | { status: 'loading' }
+  | { status: 'error' }
+  | { status: 'empty' }
+  | { status: 'ready'; releases: Release[] }
 
 function formatDate(iso: string) {
   if (!iso) return ''
@@ -40,73 +38,72 @@ function parseBody(body: string): string[] {
 
 function pickInstallUrl(assets: unknown): string | null {
   if (!Array.isArray(assets) || assets.length === 0) return null
-  const files = assets as Array<{ name?: string; browser_download_url?: string }>
+  const files = assets as { name?: string; browser_download_url?: string }[]
   const apk = files.find((asset) => asset.name?.toLowerCase().endsWith('.apk'))
   return (apk ?? files[0])?.browser_download_url ?? null
 }
 
 export default function VersionTimeline() {
-  const localUrl = useBaseUrl('/releases.json')
-  const [releases, setReleases] = useState<Release[]>([])
-  const [loading, setLoading] = useState(true)
+  const [state, setState] = useState<ReleasesState>({ status: 'loading' })
 
   useEffect(() => {
     let cancelled = false
 
     async function load() {
-      let mapped: Release[] = []
       try {
         const res = await fetch(GITHUB_RELEASES, {
           headers: { Accept: 'application/vnd.github+json' },
         })
-        if (res.ok) {
-          const data = await res.json()
-          if (Array.isArray(data) && data.length > 0) {
-            mapped = data.map((item: Record<string, unknown>) => ({
+        if (!res.ok) {
+          if (!cancelled) setState({ status: 'error' })
+          return
+        }
+        const data = (await res.json()) as Record<string, unknown>[]
+        if (!Array.isArray(data) || data.length === 0) {
+          if (!cancelled) setState({ status: 'empty' })
+          return
+        }
+        if (!cancelled) {
+          setState({
+            status: 'ready',
+            releases: data.map((item) => ({
               tag: (item.tag_name as string) || '',
               prerelease: !!item.prerelease,
               publishedAt: (item.published_at as string) || '',
               changes: parseBody((item.body as string) || ''),
               installUrl: pickInstallUrl(item.assets),
-            }))
-          }
+            })),
+          })
         }
       } catch {
-        mapped = []
-      }
-
-      if (mapped.length === 0) {
-        const res = await fetch(localUrl)
-        if (res.ok) {
-          const data = (await res.json()) as LocalRelease[]
-          mapped = data.map((item) => ({
-            tag: item.tag,
-            prerelease: false,
-            publishedAt: item.date,
-            changes: item.changes,
-            installUrl: item.installUrl ?? null,
-          }))
-        }
-      }
-
-      if (!cancelled) {
-        setReleases(mapped)
-        setLoading(false)
+        if (!cancelled) setState({ status: 'error' })
       }
     }
 
-    load()
+    void load()
     return () => {
       cancelled = true
     }
-  }, [localUrl])
+  }, [])
 
-  if (loading || releases.length === 0) return null
+  if (state.status === 'loading') {
+    return <p className="version-timeline__status">Carregando releases…</p>
+  }
+  if (state.status === 'error') {
+    return (
+      <p className="version-timeline__status">
+        Não foi possível ver as releases. Sem internet, ou o GitHub não respondeu.
+      </p>
+    )
+  }
+  if (state.status === 'empty') {
+    return <p className="version-timeline__status">Nenhuma release publicada ainda.</p>
+  }
 
   return (
     <div className="version-timeline">
       <ol className="version-timeline__list">
-        {releases.map((entry, index) => (
+        {state.releases.map((entry, index) => (
           <li key={entry.tag} className="version-timeline__item">
             <div className="version-timeline__marker" aria-hidden />
             <div className="version-timeline__card">

@@ -1,16 +1,18 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import app from '../../app.json';
 
 const logo = require('../../assets/icon.png');
 
 const REPO = 'dvizioon/VIZIOON-CLOCK-IN-DETECTOR';
 const REPO_URL = `https://github.com/${REPO}`;
 const RELEASES_URL = `https://api.github.com/repos/${REPO}/releases?per_page=20`;
+const INSTALLED = app.expo.version;
 
 type Release = {
   tag: string;
-  changes: string[];
+  url: string;
   apk: string | null;
 };
 
@@ -20,13 +22,30 @@ type ReleasesState =
   | { status: 'empty' }
   | { status: 'ready'; releases: Release[] };
 
-function parseBody(body: string): string[] {
-  return body
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('-') || line.startsWith('*'))
-    .map((line) => line.replace(/^[-*]\s*/, ''))
-    .filter(Boolean);
+function versionParts(value: string): number[] {
+  const parts = value
+    .replace(/^v/i, '')
+    .split(/[^0-9]+/)
+    .filter(Boolean)
+    .map((part) => Number(part));
+  return parts.length > 0 ? parts : [0];
+}
+
+function compareVersions(left: string, right: string): number {
+  const a = versionParts(left);
+  const b = versionParts(right);
+  const length = Math.max(a.length, b.length);
+  for (let index = 0; index < length; index += 1) {
+    const diff = (a[index] ?? 0) - (b[index] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  return 0;
+}
+
+function updateTag(releases: Release[]): string | null {
+  const newer = releases.filter((release) => compareVersions(release.tag, INSTALLED) > 0 && release.apk);
+  if (newer.length === 0) return null;
+  return newer.reduce((best, release) => (compareVersions(release.tag, best.tag) > 0 ? release : best)).tag;
 }
 
 function pickApk(assets: unknown): string | null {
@@ -46,11 +65,15 @@ async function loadReleases(): Promise<ReleasesState> {
     if (!Array.isArray(data) || data.length === 0) return { status: 'empty' };
     return {
       status: 'ready',
-      releases: data.map((item) => ({
-        tag: String(item.tag_name ?? ''),
-        changes: parseBody(String(item.body ?? '')),
-        apk: pickApk(item.assets),
-      })),
+      releases: data.map((item) => {
+        const tag = String(item.tag_name ?? '');
+        const page = typeof item.html_url === 'string' ? item.html_url : '';
+        return {
+          tag,
+          url: page || `https://github.com/${REPO}/releases/tag/${tag}`,
+          apk: pickApk(item.assets),
+        };
+      }),
     };
   } catch {
     return { status: 'error' };
@@ -59,6 +82,43 @@ async function loadReleases(): Promise<ReleasesState> {
 
 function openLink(url: string) {
   void Linking.openURL(url);
+}
+
+function ReleaseTimeline({ releases }: { releases: Release[] }) {
+  const newer = updateTag(releases);
+  return (
+    <View>
+      {releases.map((release, index) => {
+        const installed = compareVersions(release.tag, INSTALLED) === 0;
+        const last = index === releases.length - 1;
+        return (
+          <View key={release.tag} style={styles.timelineItem}>
+            <View style={styles.rail}>
+              <View style={installed ? styles.dotOn : styles.dot} />
+              {last ? null : <View style={styles.line} />}
+            </View>
+            <Pressable style={styles.releaseCard} onPress={() => openLink(release.url)}>
+              <View style={styles.releaseHead}>
+                <Text style={styles.releaseTag}>{release.tag}</Text>
+                {installed ? <Text style={styles.badge}>Instalada</Text> : null}
+              </View>
+              {release.tag === newer && release.apk ? (
+                <Pressable
+                  style={styles.download}
+                  onPress={(event) => {
+                    event.stopPropagation();
+                    openLink(release.apk as string);
+                  }}
+                >
+                  <Text style={styles.downloadLabel}>Atualizar</Text>
+                </Pressable>
+              ) : null}
+            </Pressable>
+          </View>
+        );
+      })}
+    </View>
+  );
 }
 
 export function AboutScreen() {
@@ -83,7 +143,7 @@ export function AboutScreen() {
         <Text style={styles.name}>DETECTOR DE PONTO</Text>
         <Text style={styles.tagline}>VIZIOON</Text>
         <Text style={styles.desc}>Monitora o ponto e avisa na hora das próximas batidas.</Text>
-        <Text style={styles.version}>v1.0.0</Text>
+        <Text style={styles.version}>v{INSTALLED}</Text>
       </View>
 
       <Pressable style={styles.card} onPress={() => openLink(REPO_URL)}>
@@ -105,25 +165,7 @@ export function AboutScreen() {
         {releases.status === 'empty' ? (
           <Text style={styles.pending}>Nenhuma release publicada ainda.</Text>
         ) : null}
-        {releases.status === 'ready'
-          ? releases.releases.map((release) => (
-              <View key={release.tag} style={styles.release}>
-                <Text style={styles.releaseTag}>{release.tag}</Text>
-                {release.changes.map((line) => (
-                  <Text key={line} style={styles.releaseLine}>
-                    {line}
-                  </Text>
-                ))}
-                {release.apk ? (
-                  <Pressable style={styles.download} onPress={() => openLink(release.apk as string)}>
-                    <Text style={styles.downloadLabel}>Baixar APK</Text>
-                  </Pressable>
-                ) : (
-                  <Text style={styles.pending}>Essa release ainda não tem APK.</Text>
-                )}
-              </View>
-            ))
-          : null}
+        {releases.status === 'ready' ? <ReleaseTimeline releases={releases.releases} /> : null}
       </View>
 
       <View style={styles.credit}>
@@ -231,18 +273,63 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#102033',
   },
-  release: {
-    gap: 4,
+  timelineItem: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  rail: {
+    width: 16,
+    alignItems: 'center',
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginTop: 16,
+    borderWidth: 2,
+    borderColor: '#2A1B4E',
+    backgroundColor: '#fff',
+  },
+  dotOn: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginTop: 16,
+    backgroundColor: '#2A1B4E',
+  },
+  line: {
+    width: 2,
+    flex: 1,
+    marginTop: 4,
+    backgroundColor: '#d7e3f2',
+  },
+  releaseCard: {
+    flex: 1,
+    marginBottom: 10,
+    borderRadius: 12,
+    backgroundColor: '#F4F1FF',
+    padding: 12,
+    gap: 8,
+  },
+  releaseHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   releaseTag: {
     fontSize: 16,
     fontWeight: '700',
     color: '#2A1B4E',
   },
-  releaseLine: {
-    fontSize: 14,
-    lineHeight: 20,
-    color: '#3d4d60',
+  badge: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#2A1B4E',
+    backgroundColor: '#D8D2FC',
+    borderRadius: 999,
+    overflow: 'hidden',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   download: {
     marginTop: 8,

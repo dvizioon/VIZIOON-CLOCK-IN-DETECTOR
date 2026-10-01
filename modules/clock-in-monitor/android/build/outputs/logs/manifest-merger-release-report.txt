@@ -1,7 +1,7 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-46:12
-INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-46:12
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-47:12
+INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:1:1-47:12
 	package
 		INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
 	xmlns:tools
@@ -50,60 +50,64 @@ uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
 ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:3-79
 	android:name
 		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:15:20-76
+uses-permission#android.permission.VIBRATE
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:16:3-64
+	android:name
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:16:20-61
 application
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:17:3-45:17
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:18:3-46:17
 service#expo.modules.clockinmonitor.ClockInMonitorService
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:18:5-25:15
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:19:5-26:15
 	android:exported
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:20:9-33
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:21:9-33
 	android:foregroundServiceType
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:21:9-51
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:22:9-51
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:19:9-46
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:20:9-46
 property#android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:22:7-24:111
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:23:7-25:111
 	android:value
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:24:11-108
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:25:11-108
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:23:11-70
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:24:11-70
 activity#expo.modules.clockinmonitor.PunchAlertActivity
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:26:5-33:39
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:27:5-34:39
 	android:turnScreenOn
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:33:9-36
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:34:9-36
 	android:excludeFromRecents
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:28:9-42
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:29:9-42
 	android:showWhenLocked
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:31:9-38
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:32:9-38
 	android:launchMode
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:30:9-39
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:31:9-39
 	android:exported
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:29:9-33
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:30:9-33
 	android:theme
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:32:9-73
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:33:9-73
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:27:9-43
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:28:9-43
 receiver#expo.modules.clockinmonitor.ScreenAlertReceiver
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:34:5-36:36
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:35:5-37:36
 	android:exported
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:36:9-33
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:37:9-33
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:35:9-44
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:36:9-44
 receiver#expo.modules.clockinmonitor.BootReceiver
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:37:5-44:16
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:38:5-45:16
 	android:exported
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:39:9-32
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:40:9-32
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:38:9-37
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:39:9-37
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED+action:name:android.intent.action.LOCKED_BOOT_COMPLETED
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:40:7-43:23
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:7-44:23
 action#android.intent.action.BOOT_COMPLETED
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:9-71
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:9-71
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:41:17-68
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:17-68
 action#android.intent.action.LOCKED_BOOT_COMPLETED
-ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:9-78
+ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:43:9-78
 	android:name
-		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:42:17-75
+		ADDED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml:43:17-75
 uses-sdk
 INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/daniel/Área de trabalho/Projetos/clock-in-detector/modules/clock-in-monitor/android/src/main/AndroidManifest.xml
