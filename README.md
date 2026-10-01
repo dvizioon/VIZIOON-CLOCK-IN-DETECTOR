@@ -153,10 +153,6 @@ O arquivo fica em `android/app/build/outputs/apk/release/clock-in-detector.apk`.
 
 No celular, libere o acesso ao uso, as notificações e, para o alerta no meio da tela, exibir sobre outros apps. No Samsung, deixe o app sem restrição de bateria.
 
-### Publicar a release
-
-No GitHub, a tag é a versão, por exemplo `v1.0.0`. O texto usa linhas que começam com `-`. Anexe o `clock-in-detector.apk` da pasta `release`. O Sobre e a página de versões leem essa release.
-
 ---
 
 ## Onde está cada assunto
