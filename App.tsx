@@ -16,12 +16,15 @@ import {
   TOTVS_CLOCK_IN_PACKAGE,
   isNativeMonitorAvailable,
   addCameraAvailabilityListener,
+  addExtraKindListener,
   addFacialRecognitionListener,
+  consumeKindChoice,
   addForegroundAppListener,
   getRecentEvents,
   getStatus,
   openUsageAccessSettings,
   setMonitorNotice,
+  resumeMonitoringIfEnabled,
   startMonitoring,
   stopMonitoring,
   type MonitorStatus,
@@ -33,9 +36,9 @@ import { PreviewScreen } from './src/components/PreviewScreen';
 import { PunchesScreen } from './src/components/PunchesScreen';
 import { SettingsScreen } from './src/components/SettingsScreen';
 import { rememberEvents, type LogLine } from './src/logs/logbook';
-import { listenForStopAction, openNotificationSettings, readNotificationPermission, requestNotificationPermission } from './src/schedule/alerts';
+import { announceRecordedPunch, askExtraKind, listenForStopAction, openNotificationSettings, readNotificationPermission, requestNotificationPermission } from './src/schedule/alerts';
 import { countsByDay, countsByKind, monthKey, monthTitle, punchedCount, startOfWeek, weekKeys } from './src/schedule/history';
-import { loadSettings, registerFacialRecognition, savePunchNote, saveSettings, syncTodayFromEvents } from './src/schedule/day';
+import { assignEntry, assignLunch, deletePunch, loadSettings, registerFacialRecognition, savePunchNote, saveSettings, stampExtra, stampKind, syncTodayFromEvents } from './src/schedule/day';
 import { readDays, writeSettings } from './src/schedule/storage';
 import type { ScheduleSettings, WorkDay } from './src/schedule/types';
 import { defaultSettings } from './src/schedule/types';
@@ -112,12 +115,24 @@ function App() {
     setAlertWarning(result.alertWarning);
   }, []);
 
+  const applyChosenKind = useCallback((kind: 'entry' | 'lunch' | 'extra', at: number) => {
+    const run = kind === 'entry' ? assignEntry(at) : kind === 'lunch' ? assignLunch(at) : stampExtra(at);
+    void run.then((result) => {
+      if (result.recorded) void announceRecordedPunch(result.recorded, at);
+      applyScheduleResult(result);
+      void readDays().then(showDays);
+    });
+  }, [applyScheduleResult, showDays]);
+
   useEffect(() => {
     if (Platform.OS !== 'android') return;
+    const pendingKind = consumeKindChoice();
+    if (pendingKind) applyChosenKind(pendingKind.kind, pendingKind.timestamp);
     void loadSettings().then((next) => {
       setSettings(next);
       void setMonitorNotice(next.showMonitorNotice !== false);
     });
+    void resumeMonitoringIfEnabled().then(() => refresh());
     void readDays().then(showDays);
     void syncTodayFromEvents(getRecentEvents()).then(applyScheduleResult);
     void requestNotificationPermission().then((result) => {
@@ -132,14 +147,24 @@ function App() {
     const camera = addCameraAvailabilityListener(() => refresh());
     const facial = addFacialRecognitionListener((event) => {
       refresh();
-      void registerFacialRecognition(event.timestamp).then((result) => {
+      void registerFacialRecognition(event.timestamp).then(async (result) => {
+        if (result.needsChoice) {
+          const shown = await askExtraKind(event.timestamp);
+          if (!shown) applyChosenKind('extra', event.timestamp);
+          return;
+        }
+        if (result.recorded) void announceRecordedPunch(result.recorded, event.timestamp);
         applyScheduleResult(result);
         void readDays().then(showDays);
       });
     });
+    const extraKind = addExtraKindListener(() => {
+      const choice = consumeKindChoice();
+      if (choice) applyChosenKind(choice.kind, choice.timestamp);
+    });
     const appState = AppState.addEventListener('change', (next) => {
       if (next !== 'active') return;
-      refresh();
+      void resumeMonitoringIfEnabled().then(() => refresh());
       refreshPermissions();
       void syncTodayFromEvents(getRecentEvents()).then(applyScheduleResult);
     });
@@ -148,9 +173,10 @@ function App() {
       foreground.remove();
       camera.remove();
       facial.remove();
+      extraKind.remove();
       appState.remove();
     };
-  }, [applyScheduleResult, refresh, refreshPermissions]);
+  }, [applyChosenKind, applyScheduleResult, refresh, refreshPermissions]);
 
   async function onStart() {
     setBusy(true);
@@ -216,6 +242,28 @@ function App() {
           <ScrollView contentContainerStyle={styles.settingsContent}>
             <PunchesScreen
               days={days}
+              onStamp={(kind) => {
+                const at = Date.now();
+                void stampKind(kind, at).then((result) => {
+                  if (result.recorded) void announceRecordedPunch(result.recorded, at);
+                  applyScheduleResult(result);
+                  void readDays().then(showDays);
+                });
+              }}
+              onExtra={() => {
+                const at = Date.now();
+                void stampExtra(at).then((result) => {
+                  if (result.recorded) void announceRecordedPunch(result.recorded, at);
+                  applyScheduleResult(result);
+                  void readDays().then(showDays);
+                });
+              }}
+              onDelete={(dayKey, target) => {
+                void deletePunch(dayKey, target).then((result) => {
+                  applyScheduleResult(result);
+                  void readDays().then(showDays);
+                });
+              }}
               onNote={(dayKey, target, note) => {
                 void savePunchNote(dayKey, target, note).then(() => readDays().then(showDays));
               }}

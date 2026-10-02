@@ -63,7 +63,7 @@ export default function Home() {
               Ver documentação
             </Link>
             <Link className="app-button app-button--soft" to="/docs/versoes">
-              Versão 1.0.1
+              Versão 1.0.2
             </Link>
           </div>
 

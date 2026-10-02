@@ -58,6 +58,12 @@ export function startMonitoring(packageName: string = TOTVS_CLOCK_IN_PACKAGE): P
   return requireMonitor().startMonitoring(packageName);
 }
 
+export function resumeMonitoringIfEnabled(): Promise<boolean> {
+  const resume = ClockInMonitor?.resumeIfEnabled;
+  if (!resume) return Promise.resolve(false);
+  return resume();
+}
+
 export function stopMonitoring(): Promise<boolean> {
   return requireMonitor().stopMonitoring();
 }
@@ -159,6 +165,20 @@ export function presentScreenAlert(title: string, message: string): Promise<bool
   return ClockInMonitor.presentScreenAlert(title, message).catch(() => false);
 }
 
+export type ExtraKind = 'entry' | 'lunch' | 'extra';
+
+export function presentKindPrompt(at: number, message: string): Promise<boolean> {
+  if (!ClockInMonitor?.presentKindPrompt) return Promise.resolve(false);
+  return ClockInMonitor.presentKindPrompt(at, message).catch(() => false);
+}
+
+export function consumeKindChoice(): { kind: ExtraKind; timestamp: number } | null {
+  const choice = ClockInMonitor?.consumeKindChoice?.();
+  if (!choice) return null;
+  if (choice.kind !== 'entry' && choice.kind !== 'lunch' && choice.kind !== 'extra') return null;
+  return { kind: choice.kind, timestamp: choice.timestamp };
+}
+
 export function moveToBackground(): Promise<boolean> {
   if (!ClockInMonitor?.moveToBackground) return Promise.resolve(false);
   return ClockInMonitor.moveToBackground().catch(() => false);
@@ -189,6 +209,15 @@ export function addCameraAvailabilityListener(listener: (event: CameraAvailabili
 
 export function addFacialRecognitionListener(listener: (event: FacialRecognitionEvent) => void) {
   return ClockInMonitor?.addListener('onFacialRecognitionLikely', listener) ?? emptySubscription;
+}
+
+export function addExtraKindListener(listener: (event: { kind: ExtraKind; timestamp: number }) => void) {
+  return (
+    ClockInMonitor?.addListener('onExtraKindChosen', (event) => {
+      if (event.kind !== 'entry' && event.kind !== 'lunch' && event.kind !== 'extra') return;
+      listener({ kind: event.kind, timestamp: event.timestamp });
+    }) ?? emptySubscription
+  );
 }
 
 export type {

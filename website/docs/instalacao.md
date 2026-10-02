@@ -15,7 +15,7 @@ O arquivo fica em `android/app/build/outputs/apk/release/clock-in-detector.apk` 
 cd android && ./gradlew assembleRelease
 ```
 
-A versão atual é a **1.0.1**. O que ela contém está em [Versões](/docs/versoes).
+A versão atual é a **1.0.2**. O que ela contém está em [Versões](/docs/versoes).
 
 ## No celular
 

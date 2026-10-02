@@ -1,8 +1,8 @@
-import { cancelScreenAlert, cancelVibration, ensureAlertChannel, moveToBackground, openNotificationSettings as openNativeNotificationSettings, playSystemSound, presentScreenAlert, rememberAlertPlayback, scheduleScreenAlert, vibrateAlert } from 'clock-in-monitor';
+import { cancelScreenAlert, cancelVibration, ensureAlertChannel, moveToBackground, openNotificationSettings as openNativeNotificationSettings, playSystemSound, presentKindPrompt, presentScreenAlert, rememberAlertPlayback, scheduleScreenAlert, vibrateAlert } from 'clock-in-monitor';
 import { requireOptionalNativeModule } from 'expo';
 import { Linking, Platform } from 'react-native';
 import { exclusive, readDay, writeDay } from './storage';
-import { notificationCopy, reminderTimes } from './time';
+import { formatClock, notificationCopy, reminderTimes } from './time';
 import { punchTitle, type Punch, type PunchKind, type ScheduleSettings, type WorkDay } from './types';
 
 const STOP_CATEGORY = 'clockpunch';
@@ -445,6 +445,33 @@ export async function previewAlarm(settings: ScheduleSettings): Promise<string |
   const played = await playSelectedSound(settings, true);
   if (!played) return 'Reinstale o app para ouvir o alarme.';
   return null;
+}
+
+export function askExtraKind(at: number): Promise<boolean> {
+  return presentKindPrompt(at, `Às ${formatClock(at)} esse ponto ficou fora do intervalo. É entrada ou almoço?`);
+}
+
+export async function announceRecordedPunch(label: string, at: number): Promise<void> {
+  void vibrateAlert(1);
+  const Notifications = await loadNotifications();
+  if (!Notifications) return;
+  const denied = await ensureAlertPermission();
+  if (denied) return;
+  await Notifications.setNotificationChannelAsync('ponto-registro', {
+    name: 'Ponto registrado',
+    importance: Notifications.AndroidImportance.HIGH,
+    enableVibrate: false,
+    vibrationPattern: [0],
+    sound: null,
+  });
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Ponto registrado',
+      body: `${label} às ${formatClock(at)}.`,
+      sound: false,
+    },
+    trigger: { channelId: 'ponto-registro' },
+  });
 }
 
 export function previewVibration(settings: ScheduleSettings): void {

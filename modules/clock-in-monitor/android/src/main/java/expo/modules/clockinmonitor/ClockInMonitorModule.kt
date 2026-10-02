@@ -1,9 +1,12 @@
 package expo.modules.clockinmonitor
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
@@ -20,6 +23,7 @@ class ClockInMonitorModule : Module() {
       "onForegroundAppChanged",
       "onCameraAvailabilityChanged",
       "onFacialRecognitionLikely",
+      "onExtraKindChosen",
     )
 
     OnCreate {
@@ -90,6 +94,7 @@ class ClockInMonitorModule : Module() {
         throw UsageAccessRequiredException()
       }
       requestNotificationPermission()
+      requestUnrestrictedBattery(context)
       val target = packageName?.takeIf { it.isNotBlank() } ?: ClockInMonitorService.DEFAULT_PACKAGE
       val intent = Intent(context, ClockInMonitorService::class.java).apply {
         action = ClockInMonitorService.ACTION_START
@@ -101,6 +106,16 @@ class ClockInMonitorModule : Module() {
         context.startService(intent)
       }
       target
+    }
+
+    AsyncFunction("resumeIfEnabled") {
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      if (!ClockInMonitorService.shouldRestart(context)) return@AsyncFunction false
+      if (ClockInMonitorService.running) return@AsyncFunction true
+      if (!BootReceiver.startMonitor(context)) {
+        BootReceiver.scheduleRetry(context, 5_000L)
+      }
+      true
     }
 
     Function("listSystemSounds") { kind: String? ->
@@ -177,6 +192,16 @@ class ClockInMonitorModule : Module() {
       true
     }
 
+    AsyncFunction("presentKindPrompt") { at: Double, message: String ->
+      val context = appContext.reactContext ?: return@AsyncFunction false
+      presentKindPrompt(context, at.toLong(), message)
+    }
+
+    Function("consumeKindChoice") {
+      val context = appContext.reactContext ?: return@Function null
+      consumeKindChoice(context)
+    }
+
     AsyncFunction("moveToBackground") {
       val activity = appContext.currentActivity ?: return@AsyncFunction false
       activity.moveTaskToBack(true)
@@ -209,11 +234,32 @@ class ClockInMonitorModule : Module() {
 
     AsyncFunction("stopMonitoring") {
       val context = appContext.reactContext ?: return@AsyncFunction false
+      BootReceiver.cancelRetry(context)
       val intent = Intent(context, ClockInMonitorService::class.java).apply {
         action = ClockInMonitorService.ACTION_STOP
       }
       context.startService(intent)
       true
+    }
+  }
+
+  private fun requestUnrestrictedBattery(context: Context) {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return
+    val power = context.getSystemService(PowerManager::class.java) ?: return
+    if (power.isIgnoringBatteryOptimizations(context.packageName)) return
+    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+      data = Uri.parse("package:${context.packageName}")
+    }
+    val activity = appContext.currentActivity
+    try {
+      if (activity != null) {
+        activity.startActivity(intent)
+      } else {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+      }
+    } catch (_: Exception) {
+      // O celular não oferece essa tela. O monitor continua.
     }
   }
 

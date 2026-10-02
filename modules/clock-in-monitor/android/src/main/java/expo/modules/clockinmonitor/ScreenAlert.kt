@@ -83,6 +83,127 @@ fun presentScreenAlert(context: Context, title: String, message: String) {
   showSystemOverlay(context, title, message)
 }
 
+private const val KIND_PREFS = "ponto-kind"
+
+fun presentKindPrompt(context: Context, at: Long, message: String): Boolean {
+  if (!canDrawOverlay(context)) return false
+  val app = context.applicationContext
+  alertToken += 1
+  val token = alertToken
+  val windowManager = app.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+  alertHandler.post {
+    if (token != alertToken) return@post
+    removeOverlayView(windowManager)
+    val density = app.resources.displayMetrics.density
+    fun dp(value: Int) = (value * density).toInt()
+    fun button(label: String, kind: String, filled: Boolean): TextView {
+      return TextView(app).apply {
+        text = label
+        setTextColor(if (filled) Color.WHITE else Color.parseColor("#2A1B4E"))
+        textSize = 16f
+        setTypeface(typeface, Typeface.BOLD)
+        gravity = Gravity.CENTER
+        background = GradientDrawable().apply {
+          cornerRadius = dp(14).toFloat()
+          if (filled) setColor(Color.parseColor("#2A1B4E")) else setStroke(dp(1), Color.parseColor("#2A1B4E"))
+        }
+        setPadding(dp(16), dp(14), dp(16), dp(14))
+        setOnClickListener {
+          alertToken += 1
+          removeOverlayView(windowManager)
+          rememberKindChoice(app, kind, at)
+        }
+      }
+    }
+    val card = LinearLayout(app).apply {
+      orientation = LinearLayout.VERTICAL
+      background = GradientDrawable().apply {
+        setColor(Color.WHITE)
+        cornerRadius = dp(20).toFloat()
+      }
+      setPadding(dp(22), dp(22), dp(22), dp(16))
+      elevation = dp(8).toFloat()
+    }
+    card.addView(logoView(app, dp(72)))
+    card.addView(TextView(app).apply {
+      text = "Ponto fora do intervalo"
+      setTextColor(Color.parseColor("#2A1B4E"))
+      textSize = 16f
+      setTypeface(typeface, Typeface.BOLD)
+    })
+    card.addView(TextView(app).apply {
+      text = message
+      setTextColor(Color.parseColor("#102033"))
+      textSize = 18f
+      setTypeface(typeface, Typeface.BOLD)
+      setPadding(0, dp(10), 0, dp(18))
+    })
+    val gap = dp(10)
+    listOf(
+      button("Entrada", "entry", true),
+      button("Almoço", "lunch", true),
+      button("Deixar como adicional", "extra", false),
+    ).forEach { view ->
+      card.addView(view, LinearLayout.LayoutParams(
+        LinearLayout.LayoutParams.MATCH_PARENT,
+        LinearLayout.LayoutParams.WRAP_CONTENT,
+      ).apply { bottomMargin = gap })
+    }
+    val root = FrameLayout(app).apply {
+      setBackgroundColor(0x99000000.toInt())
+      addView(card, FrameLayout.LayoutParams(
+        FrameLayout.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams.WRAP_CONTENT,
+      ).apply {
+        gravity = Gravity.CENTER
+        leftMargin = dp(28)
+        rightMargin = dp(28)
+      })
+    }
+    val type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+    } else {
+      @Suppress("DEPRECATION")
+      WindowManager.LayoutParams.TYPE_PHONE
+    }
+    val params = WindowManager.LayoutParams(
+      WindowManager.LayoutParams.MATCH_PARENT,
+      WindowManager.LayoutParams.MATCH_PARENT,
+      type,
+      WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+      PixelFormat.TRANSLUCENT,
+    )
+    params.gravity = Gravity.CENTER
+    windowManager.addView(root, params)
+    overlayView = root
+  }
+  wakeScreen(app)
+  return true
+}
+
+private fun rememberKindChoice(context: Context, kind: String, at: Long) {
+  context.getSharedPreferences(KIND_PREFS, Context.MODE_PRIVATE).edit()
+    .putString("kind", kind)
+    .putLong("at", at)
+    .commit()
+  ClockInMonitorModule.emit(
+    "onExtraKindChosen",
+    mapOf("kind" to kind, "timestamp" to at),
+  )
+}
+
+fun consumeKindChoice(context: Context): Map<String, Any?>? {
+  val prefs = context.getSharedPreferences(KIND_PREFS, Context.MODE_PRIVATE)
+  val kind = prefs.getString("kind", null) ?: return null
+  val at = prefs.getLong("at", 0L)
+  prefs.edit().remove("kind").remove("at").commit()
+  if (kind != "entry" && kind != "lunch" && kind != "extra") return null
+  return mapOf("kind" to kind, "timestamp" to at)
+}
+
 private fun showSystemOverlay(context: Context, title: String, message: String) {
   val app = context.applicationContext
   if (!canDrawOverlay(app)) return

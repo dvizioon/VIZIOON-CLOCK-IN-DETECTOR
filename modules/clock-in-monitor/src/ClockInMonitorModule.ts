@@ -44,6 +44,7 @@ type ClockInMonitorEvents = {
   onForegroundAppChanged(event: ForegroundAppEvent): void;
   onCameraAvailabilityChanged(event: CameraAvailabilityEvent): void;
   onFacialRecognitionLikely(event: FacialRecognitionEvent): void;
+  onExtraKindChosen(event: { kind: string; timestamp: number }): void;
 };
 
 declare class ClockInMonitorNativeModule extends NativeModule<ClockInMonitorEvents> {
@@ -54,6 +55,7 @@ declare class ClockInMonitorNativeModule extends NativeModule<ClockInMonitorEven
   openUsageAccessSettings(): Promise<void>;
   openNotificationSettings(): Promise<void>;
   startMonitoring(packageName?: string | null): Promise<string>;
+  resumeIfEnabled(): Promise<boolean>;
   stopMonitoring(): Promise<boolean>;
   listSystemSounds(kind?: string | null): { title: string; uri: string }[];
   playSystemSound(uri: string, volume: number, kind?: string | null): Promise<boolean>;
@@ -80,6 +82,8 @@ declare class ClockInMonitorNativeModule extends NativeModule<ClockInMonitorEven
     vibrationCount: number,
   ): Promise<boolean>;
   presentScreenAlert(title: string, message: string): Promise<boolean>;
+  presentKindPrompt(at: number, message: string): Promise<boolean>;
+  consumeKindChoice(): { kind: string; timestamp: number } | null;
   moveToBackground(): Promise<boolean>;
   scheduleScreenAlert(at: number, id: number, title: string, message: string): Promise<boolean>;
   cancelScreenAlert(id: number): Promise<boolean>;

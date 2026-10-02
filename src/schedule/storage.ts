@@ -50,6 +50,12 @@ export async function readDay(dayKey: string): Promise<WorkDay | null> {
   return (await readStore()).days[dayKey] ?? null;
 }
 
+export async function removeDay(dayKey: string): Promise<void> {
+  const store = await readStore();
+  delete store.days[dayKey];
+  writeStore(store);
+}
+
 export async function writeDay(day: WorkDay, settings?: ScheduleSettings): Promise<void> {
   const store = await readStore();
   if (settings) store.settings = settings;

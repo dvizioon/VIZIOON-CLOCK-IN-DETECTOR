@@ -73,6 +73,7 @@ class ClockInMonitorService : Service() {
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     if (intent?.action == ACTION_STOP) {
+      BootReceiver.cancelRetry(this)
       monitorEnabled(this, false)
       if (running || foregroundStarted) {
         shutdown()
@@ -94,6 +95,7 @@ class ClockInMonitorService : Service() {
     monitorEnabled(this, true)
 
     startAsForeground()
+    BootReceiver.cancelRetry(this)
     if (!running) {
       running = true
       queryCursor = System.currentTimeMillis() - INITIAL_LOOKBACK_MS
@@ -114,13 +116,14 @@ class ClockInMonitorService : Service() {
       } else {
         startService(restart)
       }
-    } catch (_: IllegalStateException) {
-      // Android 12+ can reject a foreground start after the task is removed.
+    } catch (_: Exception) {
+      BootReceiver.scheduleRetry(applicationContext, 15_000L)
     }
     super.onTaskRemoved(rootIntent)
   }
 
   override fun onDestroy() {
+    val restart = running && shouldRestart(this)
     running = false
     if (::handler.isInitialized) {
       handler.removeCallbacksAndMessages(null)
@@ -131,6 +134,9 @@ class ClockInMonitorService : Service() {
       handlerThread.quitSafely()
     }
     super.onDestroy()
+    if (restart) {
+      BootReceiver.scheduleRetry(applicationContext, 15_000L)
+    }
   }
 
   override fun onBind(intent: Intent?): IBinder? = null
@@ -328,7 +334,7 @@ class ClockInMonitorService : Service() {
       context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
         .putBoolean("enabled", enabled)
         .putString("package", targetPackage)
-        .apply()
+        .commit()
     }
 
     fun monitorNoticeVisible(context: Context): Boolean {

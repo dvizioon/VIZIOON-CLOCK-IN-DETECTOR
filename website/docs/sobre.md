@@ -7,7 +7,7 @@ sidebar_custom_props:
 
 # Sobre
 
-Detector de ponto, versão 1.0.1.
+Detector de ponto, versão 1.0.2.
 
 Desenvolvido por Daniel Estevão, Vizioon.
 

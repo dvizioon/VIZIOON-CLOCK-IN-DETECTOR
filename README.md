@@ -19,7 +19,7 @@
   <br />
   <img src="https://img.shields.io/badge/TypeScript-6-3178C6?style=for-the-badge&logo=typescript&logoColor=white" />
   <img src="https://img.shields.io/badge/Kotlin-Android-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white" />
-  <img src="https://img.shields.io/badge/VERSION-1.0.1-success?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/VERSION-1.0.2-success?style=for-the-badge" />
   <img src="https://img.shields.io/badge/IDIOMA-pt--BR-2A1B4E?style=for-the-badge" />
 </p>
 
@@ -81,9 +81,11 @@ Exemplo: entrada às 8:00, jornada de 8 horas, almoço de 1 hora, saída para o 
 
 ## Peças
 
-- **Monitor.** Serviço em segundo plano. Continua vendo o Clock In com o detector fechado e volta depois de reiniciar o celular, se estava ligado.
+- **Monitor.** Serviço em segundo plano. Continua vendo o Clock In com o detector fechado. Ao ligar, pede para o Android não limitar a bateria. Depois de reiniciar o celular, volta sozinho se estava ligado.
+- **Ponto registrado.** Ao gravar uma batida, a notificação diz qual ponto e a hora, e o celular vibra uma vez.
+- **Fora do intervalo.** Na câmera do Clock In, a janela pergunta se o ponto é entrada, almoço ou adicional. Entrada recomeça o dia. Almoço move a volta.
 - **Aviso na tela.** Janela no meio, com a logo, o som e o alarme, até o OK. Com a tela bloqueada, também sai a notificação.
-- **Batidas.** Lista do dia e observação em cada ponto. O texto grava ao sair do campo.
+- **Batidas.** Lista do dia e observação em cada ponto. No card de hoje, **Bater ponto** abre entrada, horário do almoço, saída do almoço e saída. A batida já feita desativa o card e libera o próximo. **Batida adicional** grava um horário extra e a lista mostra esses horários. O ícone de lixeira apaga a batida. O texto grava ao sair do campo.
 - **Prévia.** Item do menu. Dispara a volta e a saída no intervalo escolhido ali, inclusive com o app em segundo plano.
 - **Logs.** Câmera, aplicativo da frente e o reconhecimento. **Evento** deixa só a batida. **Clock In** deixa só o que é do Clock In. **Copiar** copia a lista filtrada.
 - **Sobre.** Logo, versão, crédito e o GitHub. As releases aparecem numa linha do tempo, sem o texto. A versão instalada fica marcada. **Atualizar** só aparece numa versão mais nova e baixa o APK dela. O card abre a página da release. Sem internet, a tela avisa que não foi possível carregar.

@@ -1,13 +1,22 @@
 import type { MonitorEvent } from 'clock-in-monitor';
-import { scheduleDayAlerts } from './alerts';
-import { buildDay, exclusive, readDay, readSettings, todayKey, writeDay, writeSettings } from './storage';
-import { dateKey, alertAt, isInsideWindow } from './time';
+import { cancelPunchAlert, scheduleDayAlerts } from './alerts';
+import { buildDay, exclusive, readDay, readSettings, removeDay, todayKey, writeDay, writeSettings } from './storage';
+import { dateKey, alertAt, isInsideWindow, scheduledTimes } from './time';
 import { defaultSettings, type ExtraPunch, type PunchKind, type ScheduleSettings, type WorkDay } from './types';
 
 export type ApplyResult = {
   day: WorkDay | null;
   alertWarning: string | null;
+  recorded?: string;
+  needsChoice?: boolean;
 };
+
+function recordedName(kind: PunchKind): string {
+  if (kind === 'lunchOut') return 'Horário do almoço';
+  if (kind === 'lunchIn') return 'Saída do almoço';
+  if (kind === 'exit') return 'Saída';
+  return 'Entrada';
+}
 
 function clampSettings(settings: ScheduleSettings): ScheduleSettings {
   const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -48,16 +57,36 @@ function alreadyRecorded(day: WorkDay, at: number): boolean {
   return official || extra;
 }
 
-async function applyStamp(at: number): Promise<ApplyResult> {
+function shellDay(dayKey: string): WorkDay {
+  const kinds: PunchKind[] = ['entry', 'lunchOut', 'lunchIn', 'exit'];
+  return {
+    dayKey,
+    extras: [],
+    punches: kinds.map((kind) => ({
+      kind,
+      scheduledAt: 0,
+      actualAt: null,
+      note: '',
+      notificationId: null,
+      noticeIds: [],
+      alarmIds: [],
+    })),
+  };
+}
+
+async function applyStamp(at: number, deferExtra = false): Promise<ApplyResult> {
   const settings = await readSettings();
   const key = dateKey(at);
   const existing = await readDay(key);
+  const entryAt = existing?.punches.find((punch) => punch.kind === 'entry')?.actualAt;
 
-  if (!existing) {
+  if (!existing || entryAt == null) {
+    if (existing && alreadyRecorded(existing, at)) return { day: existing, alertWarning: null };
     const day = buildDay(key, at, settings);
+    day.extras = (existing?.extras ?? []).filter((extra) => !sameMoment(extra.at, at));
     const alertWarning = await scheduleDayAlerts(day, settings);
     await writeDay(day);
-    return { day, alertWarning };
+    return { day, alertWarning, recorded: recordedName('entry') };
   }
 
   if (!existing.extras) existing.extras = [];
@@ -80,10 +109,11 @@ async function applyStamp(at: number): Promise<ApplyResult> {
     if (entry?.actualAt == null || at < entry.actualAt + 60 * 1000) {
       return { day: existing, alertWarning: null };
     }
+    if (deferExtra) return { day: existing, alertWarning: null, needsChoice: true };
     existing.extras.push({ at, note: '' });
     existing.extras.sort((left, right) => left.at - right.at);
     await writeDay(existing);
-    return { day: existing, alertWarning: null };
+    return { day: existing, alertWarning: null, recorded: 'Batida adicional' };
   }
 
   match.actualAt = at;
@@ -95,11 +125,148 @@ async function applyStamp(at: number): Promise<ApplyResult> {
   }
   const alertWarning = await scheduleDayAlerts(existing, settings);
   await writeDay(existing);
-  return { day: existing, alertWarning };
+  return { day: existing, alertWarning, recorded: recordedName(match.kind) };
 }
 
 export function registerFacialRecognition(at: number): Promise<ApplyResult> {
-  return exclusive(() => applyStamp(at));
+  return exclusive(() => applyStamp(at, true));
+}
+
+async function writeEntry(at: number): Promise<ApplyResult> {
+  const settings = await readSettings();
+  const key = dateKey(at);
+  const existing = await readDay(key);
+  if (existing) {
+    for (const punch of existing.punches) {
+      await cancelPunchAlert(punch, existing.dayKey);
+    }
+  }
+  const day = buildDay(key, at, settings);
+  day.extras = (existing?.extras ?? []).filter((extra) => !sameMoment(extra.at, at));
+  const alertWarning = await scheduleDayAlerts(day, settings);
+  await writeDay(day);
+  return { day, alertWarning, recorded: recordedName('entry') };
+}
+
+export function assignEntry(at: number): Promise<ApplyResult> {
+  return exclusive(() => writeEntry(at));
+}
+
+export function assignLunch(at: number): Promise<ApplyResult> {
+  return exclusive(async () => {
+    const settings = await readSettings();
+    const existing = await readDay(dateKey(at));
+    const entryAt = existing?.punches.find((punch) => punch.kind === 'entry')?.actualAt;
+    if (!existing || entryAt == null) return writeEntry(at);
+    const lunch = existing.punches.find((punch) => punch.kind === 'lunchOut');
+    if (!lunch) return { day: existing, alertWarning: null };
+    lunch.actualAt = at;
+    const back = existing.punches.find((punch) => punch.kind === 'lunchIn');
+    if (back && back.actualAt == null) {
+      back.scheduledAt = at + settings.lunchHours * 60 * 60 * 1000;
+    }
+    const alertWarning = await scheduleDayAlerts(existing, settings);
+    await writeDay(existing);
+    return { day: existing, alertWarning, recorded: recordedName('lunchOut') };
+  });
+}
+
+const STAMP_ORDER: PunchKind[] = ['entry', 'lunchOut', 'lunchIn', 'exit'];
+
+export function nextStampKind(day: WorkDay | null | undefined): PunchKind | null {
+  for (const kind of STAMP_ORDER) {
+    const punch = day?.punches.find((item) => item.kind === kind);
+    if (punch?.actualAt == null) return kind;
+  }
+  return null;
+}
+
+export function stampKind(kind: PunchKind, at = Date.now()): Promise<ApplyResult> {
+  return exclusive(async () => {
+    const settings = await readSettings();
+    const key = dateKey(at);
+    const existing = await readDay(key);
+    if (nextStampKind(existing) !== kind) return { day: existing, alertWarning: null };
+    if (existing && alreadyRecorded(existing, at)) return { day: existing, alertWarning: null };
+
+    if (kind === 'entry') {
+      const day = buildDay(key, at, settings);
+      day.extras = (existing?.extras ?? []).filter((extra) => !sameMoment(extra.at, at));
+      const alertWarning = await scheduleDayAlerts(day, settings);
+      await writeDay(day);
+      return { day, alertWarning, recorded: recordedName('entry') };
+    }
+
+    if (!existing) return { day: null, alertWarning: null };
+    const punch = existing.punches.find((item) => item.kind === kind);
+    if (!punch || punch.actualAt != null) return { day: existing, alertWarning: null };
+    punch.actualAt = at;
+    if (kind === 'lunchOut') {
+      const back = existing.punches.find((item) => item.kind === 'lunchIn');
+      if (back && back.actualAt == null) {
+        back.scheduledAt = at + settings.lunchHours * 60 * 60 * 1000;
+      }
+    }
+    const alertWarning = await scheduleDayAlerts(existing, settings);
+    await writeDay(existing);
+    return { day: existing, alertWarning, recorded: recordedName(kind) };
+  });
+}
+
+export function stampExtra(at = Date.now()): Promise<ApplyResult> {
+  return exclusive(async () => {
+    const key = dateKey(at);
+    const existing = (await readDay(key)) ?? shellDay(key);
+    if (!existing.extras) existing.extras = [];
+    if (alreadyRecorded(existing, at)) return { day: existing, alertWarning: null };
+    existing.extras.push({ at, note: '' });
+    existing.extras.sort((left, right) => left.at - right.at);
+    await writeDay(existing);
+    return { day: existing, alertWarning: null, recorded: 'Batida adicional' };
+  });
+}
+
+export function deletePunch(dayKey: string, target: NoteTarget): Promise<ApplyResult> {
+  return exclusive(async () => {
+    const day = await readDay(dayKey);
+    if (!day) return { day: null, alertWarning: null };
+    const settings = await readSettings();
+
+    if (!('kind' in target)) {
+      day.extras = (day.extras ?? []).filter((item) => item.at !== target.at);
+      const entryAt = day.punches.find((punch) => punch.kind === 'entry')?.actualAt;
+      if (entryAt == null && day.extras.length === 0) {
+        await removeDay(day.dayKey);
+        return { day: null, alertWarning: null };
+      }
+      await writeDay(day);
+      return { day, alertWarning: null };
+    }
+
+    const punch = day.punches.find((item) => item.kind === target.kind);
+    if (!punch || punch.actualAt == null) return { day, alertWarning: null };
+
+    if (punch.kind === 'entry') {
+      for (const item of day.punches) {
+        await cancelPunchAlert(item, day.dayKey);
+      }
+      await removeDay(day.dayKey);
+      return { day: null, alertWarning: null };
+    }
+
+    punch.actualAt = null;
+    punch.note = '';
+    if (punch.kind === 'lunchOut') {
+      const entryAt = day.punches.find((item) => item.kind === 'entry')?.actualAt;
+      const back = day.punches.find((item) => item.kind === 'lunchIn');
+      if (entryAt != null && back && back.actualAt == null) {
+        back.scheduledAt = scheduledTimes(entryAt, settings).lunchIn;
+      }
+    }
+    const alertWarning = await scheduleDayAlerts(day, settings);
+    await writeDay(day);
+    return { day, alertWarning };
+  });
 }
 
 export function syncTodayFromEvents(events: MonitorEvent[]): Promise<ApplyResult> {
